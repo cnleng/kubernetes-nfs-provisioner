@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: nfs-client-provisioner
+  name: nfs-client-provisioner
+  namespace: nfs-storage
+spec:
+  progressDeadlineSeconds: 2147483647
+  replicas: 2
+  revisionHistoryLimit: 2147483647
+  selector:
+    matchLabels:
+      app: nfs-client-provisioner
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: nfs-client-provisioner
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - nfs-client-provisioner
+                topologyKey: kubernetes.io/hostname
+              weight: 100
+      containers:
+        - env:
+            - name: PROVISIONER_NAME
+              value: nfs-provisioner/nfs-ssd1
+            - name: NFS_SERVER
+              value: 192.168.0.2
+            - name: NFS_PATH
+              value: /mnt/data/kube
+          image: quay.io/external_storage/nfs-client-provisioner:latest
+          imagePullPolicy: Always
+          name: nfs-client-provisioner
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+            - mountPath: /persistentvolumes
+              name: nfs-client-root
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: nfs-client-provisioner
+      serviceAccountName: nfs-client-provisioner
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - name: nfs-client-root
+          nfs:
+            path: /mnt/data/kube
+            server: 192.168.0.2
+status: {}
