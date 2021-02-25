@@ -1,10 +1,11 @@
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: nfs-ssd1
+  name: nfs-100-80-245-217
+  #namespace: nfs-storage
   annotations:
     storageclass.kubernetes.io/is-default-class: "true"
-provisioner: nfs-provisioner/nfs-ssd1
+provisioner: nfs-provisioner/nfs-100-80-245-217
 allowVolumeExpansion: true
 parameters:
   archiveOnDelete: "true"

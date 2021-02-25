@@ -5,7 +5,7 @@ metadata:
   labels:
     app: nfs-client-provisioner
   name: nfs-client-provisioner
-  namespace: nfs-storage
+  #namespace: nfs-storage
 spec:
   progressDeadlineSeconds: 2147483647
   replicas: 2
@@ -39,11 +39,11 @@ spec:
       containers:
         - env:
             - name: PROVISIONER_NAME
-              value: nfs-provisioner/nfs-ssd1
+              value: nfs-provisioner/nfs-100-80-245-217
             - name: NFS_SERVER
-              value: 192.168.0.2
+              value: 100.80.245.217
             - name: NFS_PATH
-              value: /mnt/data/kube
+              value: /var/nfs/data/faster-rcnn_model_data
           image: quay.io/external_storage/nfs-client-provisioner:latest
           imagePullPolicy: Always
           name: nfs-client-provisioner
@@ -63,6 +63,6 @@ spec:
       volumes:
         - name: nfs-client-root
           nfs:
-            path: /mnt/data/kube
-            server: 192.168.0.2
+            path: /var/nfs/data/faster-rcnn_model_data
+            server: 100.80.245.217
 status: {}
